@@ -5,14 +5,14 @@ import frc.robot.subsystems.Catapult;
 import frc.robot.subsystems.Launch;
 
 public class RobotContainer {
-    DigitalInput DI = new DigitalInput(0);
+    DigitalInput DI1 = new DigitalInput(0);
+    DigitalInput DI2 = new DigitalInput(1);
 
     Catapult catapult;
-    Launch launch;
+    public Launch launch;
 
     public RobotContainer() {
         catapult = new Catapult();
-
-        launch = new Launch(catapult, DI);
+        launch = new Launch(catapult, DI1, DI2);
     }
 }
