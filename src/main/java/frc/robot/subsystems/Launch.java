@@ -2,60 +2,63 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
+import edu.wpi.first.wpilibj.AnalogPotentiometer;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DigitalOutput;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
+import frc.robot.CustomDebouncer;
 
 public class Launch extends CommandBase {
-    Debouncer delayDebouncer = new Debouncer(Constants.INPUT_DELAY, DebounceType.kFalling);
+    CustomDebouncer delayDebouncer;
     Debouncer activeDebouncer = new Debouncer(Constants.ACTIVATION_TIME, DebounceType.kRising);
     DigitalInput assistantSwitch;
     DigitalInput mainSwitch;
     DigitalOutput countdownOutput;
+    DigitalOutput powerDigitalOutput;
+
+    AnalogPotentiometer powerAnalogInput;
+    AnalogPotentiometer debounceAnalogInput;
 
     Catapult catapult;
 
     boolean wasTriggered = false;
 
-    public Launch(Catapult catapult, DigitalInput assistantSwitch, DigitalInput mainSwitch, DigitalOutput countdownOutput) {
+    public Launch(Catapult catapult, DigitalInput assistantSwitch, DigitalInput mainSwitch, DigitalOutput countdownOutput, DigitalOutput powerDigitalOutput, AnalogPotentiometer powAnalogInput, AnalogPotentiometer debounceAnalogInput) {
         this.assistantSwitch = assistantSwitch;
         this.mainSwitch = mainSwitch;
         this.countdownOutput = countdownOutput;
+        this.powerDigitalOutput = powerDigitalOutput;
+        this.debounceAnalogInput = debounceAnalogInput;
+        this.powerAnalogInput = powAnalogInput;
+        this.delayDebouncer = new CustomDebouncer(debounceAnalogInput, Constants.INPUT_DELAY);
         
         addRequirements(this.catapult = catapult);
         catapult.setDefaultCommand(this);
     }
 
     public boolean triggered() {
-        boolean assistant = assistantSwitch.get();
-        boolean main = mainSwitch.get();
+        boolean assistant = !assistantSwitch.get();
+        boolean main = !mainSwitch.get();
+
+        powerDigitalOutput.set(main);
 
         if(assistant && main) {
-            return wasTriggered = false;
+            return wasTriggered = true;
         }
-
-        if(wasTriggered || !assistant) {
-            return wasTriggered = true; 
-        }
-
-        if(!assistant && !main) {
-            return wasTriggered = true; 
-        }
-
-        return wasTriggered = false;
+        
+        return wasTriggered = wasTriggered && assistant;
     }
 
     public boolean shouldLaunch() {
-        boolean trigger = triggered();
+        boolean trigger = !triggered();
 
         boolean activate = !delayDebouncer.calculate(trigger);
 
         countdownOutput.set(!trigger && !activate);
 
         boolean deactivate = !activeDebouncer.calculate(activate);
-        // System.out.print(activated);
-        // System.out.println(deactivate);
+        
         return activate && deactivate;
     }
 
@@ -64,7 +67,7 @@ public class Launch extends CommandBase {
         boolean shouldLaunch = shouldLaunch();
 
         if(shouldLaunch)
-            catapult.setMotors(Constants.PERCENT_OUTPUT);
+            catapult.setMotors(powerAnalogInput.get());
         else
             catapult.setMotors(0);
     }

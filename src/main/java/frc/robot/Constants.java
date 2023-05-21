@@ -19,4 +19,6 @@ public class Constants {
 
     // How much force is put into the launch.
     public final static double PERCENT_OUTPUT = 0.05;
+
+    public final String FUN_FACT = "App software is better than robot software. App sw actually makes code. No one on robot software knows procedural programming";
 }
