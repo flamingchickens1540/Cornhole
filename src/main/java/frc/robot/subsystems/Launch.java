@@ -13,7 +13,7 @@ public class Launch extends CommandBase {
     Debouncer activeDebouncer = new Debouncer(Constants.ACTIVATION_TIME, DebounceType.kRising);
     DigitalInput assistantSwitch;
     DigitalInput mainSwitch;
-    DigitalOutput countdownOutput;
+    DigitalOutput countdownDigitalOutput;
 
     AnalogPotentiometer powerAnalogInput;
 
@@ -24,7 +24,7 @@ public class Launch extends CommandBase {
     public Launch(Catapult catapult, DigitalInput assistantSwitch, DigitalInput mainSwitch, DigitalOutput countdownOutput, AnalogPotentiometer powAnalogInput) {
         this.assistantSwitch = assistantSwitch;
         this.mainSwitch = mainSwitch;
-        this.countdownOutput = countdownOutput;
+        this.countdownDigitalOutput = countdownOutput;
         this.powerAnalogInput = powAnalogInput;
         
         addRequirements(this.catapult = catapult);
@@ -47,7 +47,7 @@ public class Launch extends CommandBase {
 
         boolean activate = !delayDebouncer.calculate(!trigger);
 
-        countdownOutput.set(!trigger && !activate);
+        countdownDigitalOutput.set(!trigger && !activate);
 
         boolean deactivate = !activeDebouncer.calculate(activate);
         
