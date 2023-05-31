@@ -26,6 +26,7 @@ public class Launch extends CommandBase {
     long launchStart;
     long powerStart;
     double powerLevel;
+    int bounceSign = 1;
 
     AnalogPotentiometer powerAnalogInput;
 
@@ -94,8 +95,15 @@ public class Launch extends CommandBase {
                 if(!assistant) currentState = LaunchState.IDLE;
                 if(System.currentTimeMillis() - powerStart >= 1000){
                     powerStart = System.currentTimeMillis();
-                    powerLevel += 0.1;
-                    if(powerLevel > 1) powerLevel = 0.1;
+                    powerLevel += 0.1 * bounceSign;
+                    if(powerLevel > 1) {
+                        powerLevel = 1;
+                        bounceSign = -1;
+                    }
+                    if(powerLevel < 0.1){
+                        powerLevel = 0.1;
+                        bounceSign = 1;
+                    }
                 }
                 else if(assistant && user) {
                     currentState = LaunchState.COUNTDOWN;
