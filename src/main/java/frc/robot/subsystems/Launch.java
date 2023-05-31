@@ -12,7 +12,7 @@ public class Launch extends CommandBase {
         IDLE,
         SELECT,
         COUNTDOWN,
-        LAUNCH
+        LAUNCH;
     }
 
     DigitalInput assistantSwitch;
@@ -37,7 +37,7 @@ public class Launch extends CommandBase {
         this.powerAnalogInput = powAnalogInput;
         this.powerSelectionOutput = powerSelectionOutput;
 
-        powerSelectionOutput.set(false);
+        powerSelectionOutput.set(true);
         countdownOutput.set(false);
 
         currentState = LaunchState.IDLE;
@@ -58,22 +58,23 @@ public class Launch extends CommandBase {
                 powerLevel = 0.0;
                 if(assistant && !user) {
                     setState(LaunchState.SELECT);
-                    powerSelectionOutput.set(true);
+                    powerSelectionOutput.set(false);
                 }
             }
-            case SELECT -> {
-                double stateTime = (System.currentTimeMillis() - stateStart) / Constants.POWERSELECTION_BOUNCE_TIME % 2;
-                SmartDashboard.putNumber("cornhole/stateTime", stateTime);
-                if(stateTime > 1) { // Adds bounce 
-                    powerLevel = 2 - stateTime;
-                } else {
-                    powerLevel = stateTime;
-                }
+            case SELECT -> {            
                 if(!assistant) {
                     setState(LaunchState.IDLE);
                 }
                 else if(user) {
                     setState(LaunchState.COUNTDOWN);
+
+                    double stateTime = (System.currentTimeMillis() - stateStart) / Constants.POWERSELECTION_BOUNCE_TIME % 2;
+
+                    if(stateTime > 1) { // Adds bounce using a system similar to absolute valuing a sign bit
+                        powerLevel = 2 - stateTime;
+                    } else {
+                        powerLevel = stateTime;
+                    }
 
                     countdownOutput.set(true);
                 }
@@ -85,7 +86,7 @@ public class Launch extends CommandBase {
                 }
                 else if (System.currentTimeMillis() - stateStart > Constants.COUNTDOWN_TIME){
                     setState(LaunchState.LAUNCH);
-                    powerSelectionOutput.set(false); // makes display easier to code to use outputs like so
+                    powerSelectionOutput.set(true); // makes display easier to code to use outputs like so
                     catapult.setMotors(1); // Power should not change during launch :)
                 }
             }
