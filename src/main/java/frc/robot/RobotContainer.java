@@ -10,6 +10,8 @@ public class RobotContainer {
     DigitalInput assistantSwitch = new DigitalInput(0);
     DigitalInput mainSwitch = new DigitalInput(1);
     DigitalOutput countdownDigitalOutput = new DigitalOutput(2);
+    DigitalOutput powerSelectionOutput = new DigitalOutput(3);
+
     AnalogPotentiometer powerLevelAnalog = new AnalogPotentiometer(3, 1, 0);
 
     Catapult catapult;
@@ -17,6 +19,6 @@ public class RobotContainer {
 
     public RobotContainer() {
         catapult = new Catapult();
-        launch = new Launch(catapult, assistantSwitch, mainSwitch, countdownDigitalOutput, powerLevelAnalog);
+        launch = new Launch(catapult, assistantSwitch, mainSwitch, countdownDigitalOutput, powerSelectionOutput, powerLevelAnalog);
     }
 }

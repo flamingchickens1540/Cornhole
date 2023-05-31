@@ -2,10 +2,12 @@ package frc.robot;
 
 public class Constants {
     // Hold long you have to press down the trigger to launch
-    public final static double INPUT_DELAY = 3;
+    public final static double COUNTDOWN_TIME = 3000;
 
     // How long it triggers for. I suggest starting it small like at 0.01.
-    public final static double ACTIVATION_TIME = 0.5;
+    public final static double ACTIVATION_TIME = 500;
+
+    public final static double POWERSELECTION_BOUNCE_TIME = 10000;
 
     /**
      * Starting from when you press and hold the trigger, it will wait for INPUT_DELAY seconds
