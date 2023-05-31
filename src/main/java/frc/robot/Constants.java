@@ -2,7 +2,7 @@ package frc.robot;
 
 public class Constants {
     // Hold long you have to press down the trigger to launch
-    public final static double COUNTDOWN_TIME = 3000;
+    public final static double COUNTDOWN_TIME = 5000;
 
     // How long it triggers for. I suggest starting it small like at 0.01.
     public final static double ACTIVATION_TIME = 500;

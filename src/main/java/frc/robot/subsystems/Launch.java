@@ -62,19 +62,17 @@ public class Launch extends CommandBase {
                 }
             }
             case SELECT -> {
+                double stateTime = (System.currentTimeMillis() - stateStart) / Constants.POWERSELECTION_BOUNCE_TIME % 2;
+                SmartDashboard.putNumber("cornhole/stateTime", stateTime);
+                if(stateTime > 1) { // Adds bounce 
+                    powerLevel = 2 - stateTime;
+                } else {
+                    powerLevel = stateTime;
+                }
                 if(!assistant) {
                     setState(LaunchState.IDLE);
-                    break;
                 }
-                if(user) {
-                    double stateTime = (stateStart - System.currentTimeMillis()) / Constants.POWERSELECTION_BOUNCE_TIME % 2;
-
-                    if(stateTime > 1) { // Adds bounce 
-                        powerLevel = stateTime-2;
-                    } else {
-                        powerLevel = -stateTime;
-                    }
-
+                else if(user) {
                     setState(LaunchState.COUNTDOWN);
 
                     countdownOutput.set(true);
@@ -83,9 +81,9 @@ public class Launch extends CommandBase {
             case COUNTDOWN -> {
                 if (!assistant) {
                     setState(LaunchState.IDLE);
-                    break;
+                    countdownOutput.set(false);
                 }
-                if (System.currentTimeMillis() - stateStart > Constants.COUNTDOWN_TIME){
+                else if (System.currentTimeMillis() - stateStart > Constants.COUNTDOWN_TIME){
                     setState(LaunchState.LAUNCH);
                     powerSelectionOutput.set(false); // makes display easier to code to use outputs like so
                     catapult.setMotors(1); // Power should not change during launch :)
