@@ -85,6 +85,7 @@ public class Launch extends CommandBase {
             case IDLE -> {
                 catapult.setMotors(0);
                 powerLevel = 0.1;
+                bounceSign = 1;
                 if(assistant && !user) {
                     currentState = LaunchState.SELECT;
                     powerStart = System.currentTimeMillis();
