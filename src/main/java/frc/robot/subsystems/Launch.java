@@ -22,6 +22,7 @@ public class Launch extends CommandBase {
     LaunchState currentState;
     long stateStart;
     double powerLevel;
+    int bounceSign = 1;
 
     AnalogPotentiometer powerAnalogInput;
 
