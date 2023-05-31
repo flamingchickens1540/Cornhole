@@ -37,7 +37,7 @@ public class Launch extends CommandBase {
         this.powerAnalogInput = powAnalogInput;
         this.powerSelectionOutput = powerSelectionOutput;
 
-        powerSelectionOutput.set(true);
+        powerSelectionOutput.set(true); // powerSelection is inverted so that the display will still work if it is disconnected
         countdownOutput.set(false);
 
         currentState = LaunchState.IDLE;
@@ -50,7 +50,7 @@ public class Launch extends CommandBase {
     @Override
     public void execute() {
         boolean assistant = !assistantSwitch.get();
-        boolean user = mainSwitch.get(); // check
+        boolean user = mainSwitch.get();
 
         switch (currentState) {
             case IDLE -> {
