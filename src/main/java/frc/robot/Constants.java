@@ -16,6 +16,4 @@ public class Constants {
     public final static int FRONT_RIGHT_MOTOR = 13;
     public final static int BACK_LEFT_MOTOR = 12;
     public final static int BACK_RIGHT_MOTOR = 14;
-
-    public final String FUN_FACT = "App software is better than robot software. App sw actually makes code. No one on robot software knows procedural programming";
 }
