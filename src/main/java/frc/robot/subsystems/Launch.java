@@ -70,7 +70,7 @@ public class Launch extends CommandBase {
 
                     double stateTime = (System.currentTimeMillis() - stateStart) / Constants.POWERSELECTION_BOUNCE_TIME % 2;
 
-                    if(stateTime > 1) { // Adds bounce using a system similar to absolute valuing a sign bit
+                    if(stateTime > 1) { // Adds bounce using a system similar to absolute valuing a signed int
                         powerLevel = 2 - stateTime;
                     } else {
                         powerLevel = stateTime;
