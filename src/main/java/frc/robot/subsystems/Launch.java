@@ -12,7 +12,8 @@ public class Launch extends CommandBase {
         IDLE,
         SELECT,
         COUNTDOWN,
-        LAUNCH;
+        LAUNCH,
+        LAUNCH_IDLE;
     }
 
     DigitalInput assistantSwitch;
@@ -45,6 +46,8 @@ public class Launch extends CommandBase {
 
         addRequirements(this.catapult = catapult);
         catapult.setDefaultCommand(this);
+
+        catapult.setMotors(0);
     }
 
     @Override
@@ -54,7 +57,6 @@ public class Launch extends CommandBase {
 
         switch (currentState) {
             case IDLE -> {
-                catapult.setMotors(0);
                 powerLevel = 0.0;
                 if(assistant && !user) {
                     setState(LaunchState.SELECT);
@@ -92,7 +94,14 @@ public class Launch extends CommandBase {
             }
             case LAUNCH -> {
                 if (System.currentTimeMillis() - stateStart >= Constants.ACTIVATION_TIME) {
-                    setState(LaunchState.IDLE);
+                    setState(LaunchState.LAUNCH_IDLE);
+                    catapult.setMotors(0);
+                }
+            }
+
+            case LAUNCH_IDLE -> {
+                if(!(user || assistant)) {
+                    setState(LaunchState.LAUNCH);
                     countdownOutput.set(false);
                 }
             }
