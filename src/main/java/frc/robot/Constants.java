@@ -18,4 +18,11 @@ public class Constants {
     public final static int FRONT_RIGHT_MOTOR = 13;
     public final static int BACK_LEFT_MOTOR = 12;
     public final static int BACK_RIGHT_MOTOR = 14;
+
+    public final static int ASSISTANT_SWITCH = 0;
+    public final static int USER_SWITCH = 1;
+    public final static int COUNT_OUTPUT = 2;
+    public final static int DISPLAY_COUNTDOWN_OUTPUT = 3;
+
+    public final static int POWER_LEVEL_ANALOG = 3;
 }

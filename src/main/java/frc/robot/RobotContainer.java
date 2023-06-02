@@ -7,18 +7,18 @@ import frc.robot.subsystems.Catapult;
 import frc.robot.subsystems.Launch;
 
 public class RobotContainer {
-    DigitalInput assistantSwitch = new DigitalInput(0);
-    DigitalInput mainSwitch = new DigitalInput(1);
-    DigitalOutput countdownDigitalOutput = new DigitalOutput(2);
-    DigitalOutput powerSelectionOutput = new DigitalOutput(3);
+    DigitalInput assistantSwitch = new DigitalInput(Constants.ASSISTANT_SWITCH);
+    DigitalInput userSwitch = new DigitalInput(Constants.USER_SWITCH);
+    DigitalOutput countOutput = new DigitalOutput(Constants.COUNT_OUTPUT);
+    DigitalOutput displayCountdownOutput = new DigitalOutput(Constants.DISPLAY_COUNTDOWN_OUTPUT);
 
-    AnalogPotentiometer powerLevelAnalog = new AnalogPotentiometer(3, 1, 0);
+    AnalogPotentiometer powerLevelAnalog = new AnalogPotentiometer(Constants.POWER_LEVEL_ANALOG, 1, 0);
 
     Catapult catapult;
     Launch launch;
 
     public RobotContainer() {
         catapult = new Catapult();
-        launch = new Launch(catapult, assistantSwitch, mainSwitch, countdownDigitalOutput, powerSelectionOutput, powerLevelAnalog);
+        launch = new Launch(catapult, assistantSwitch, userSwitch, countOutput, displayCountdownOutput, powerLevelAnalog);
     }
 }

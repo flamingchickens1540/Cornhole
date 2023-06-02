@@ -17,7 +17,7 @@ public class Launch extends CommandBase {
     }
 
     DigitalInput assistantSwitch;
-    DigitalInput mainSwitch;
+    DigitalInput userSwitch;
     DigitalOutput countOutput;
     DigitalOutput displayCountdownOutput;
     LaunchState currentState;
@@ -31,9 +31,9 @@ public class Launch extends CommandBase {
 
     boolean wasTriggered = false;
 
-    public Launch(Catapult catapult, DigitalInput assistantSwitch, DigitalInput mainSwitch, DigitalOutput displayCountdownOutput, DigitalOutput countOutput, AnalogPotentiometer powAnalogInput) {
+    public Launch(Catapult catapult, DigitalInput assistantSwitch, DigitalInput userSwitch, DigitalOutput displayCountdownOutput, DigitalOutput countOutput, AnalogPotentiometer powAnalogInput) {
         this.assistantSwitch = assistantSwitch;
-        this.mainSwitch = mainSwitch;
+        this.userSwitch = userSwitch;
         this.countOutput = countOutput;
         this.powerAnalogInput = powAnalogInput;
         this.displayCountdownOutput = displayCountdownOutput;
@@ -53,7 +53,7 @@ public class Launch extends CommandBase {
     @Override
     public void execute() {
         boolean assistant = !assistantSwitch.get();
-        boolean user = mainSwitch.get();
+        boolean user = userSwitch.get();
 
         switch (currentState) {
             case IDLE -> {
