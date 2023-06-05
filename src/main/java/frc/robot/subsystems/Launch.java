@@ -31,13 +31,10 @@ public class Launch extends CommandBase {
     LaunchState currentState;
     long stateStart;
     double powerLevel;
-    int bounceSign = 1;
 
     AnalogPotentiometer powerAnalogInput;
 
     Catapult catapult;
-
-    boolean wasTriggered = false;
 
     public Launch(Catapult catapult, DigitalInput assistantSwitch, DigitalInput userSwitch, DigitalOutput displayCountdownOutput, DigitalOutput countOutput, AnalogPotentiometer powAnalogInput) {
         this.assistantSwitch = assistantSwitch;
@@ -70,12 +67,12 @@ public class Launch extends CommandBase {
                     setState(LaunchState.IDLE);
                 }
                 else if(user) {
-                    double stateTime = (System.currentTimeMillis() - stateStart) / Constants.POWERSELECTION_BOUNCE_TIME % 2;
+                    double powerLevel = (System.currentTimeMillis() - stateStart) / Constants.POWERSELECTION_BOUNCE_TIME % 2;
 
-                    if(stateTime > 1) { // Adds bounce using a system similar to absolute valuing a signed int
-                        powerLevel += 2 - stateTime;
+                    if(powerLevel > 1) { // Adds bounce using a system similar to absolute valuing a signed int
+                        powerLevel = 2 - powerLevel;
                     }
-                    
+
                     setState(LaunchState.POWER_DISP);
                 }
             }
