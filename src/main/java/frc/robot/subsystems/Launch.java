@@ -123,6 +123,6 @@ public class Launch extends CommandBase {
     }
 
     private double scalePower(double min, double max) {
-        return min+(max-min)*powerLevel*powerAnalogInput.get();
+        return (min+(max-min)*powerLevel)*powerAnalogInput.get();
     }
 }
