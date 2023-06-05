@@ -25,4 +25,6 @@ public class Constants {
     public final static int DISPLAY_COUNTDOWN_OUTPUT = 3;
 
     public final static int POWER_LEVEL_ANALOG = 3;
+
+    public static final double MIN_POWER = 0.75;
 }

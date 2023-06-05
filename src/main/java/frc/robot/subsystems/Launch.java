@@ -11,6 +11,7 @@ public class Launch extends CommandBase {
     private enum LaunchState {
         IDLE,
         SELECT,
+        POWER_DISP,
         COUNTDOWN,
         LAUNCH;
     }
@@ -56,46 +57,54 @@ public class Launch extends CommandBase {
 
         switch (currentState) {
             case IDLE -> {
+                countOutput.set(false); 
+                displayCountdownOutput.set(false);
                 powerLevel = 0.0;
                 if(assistant && !user) {
                     setState(LaunchState.SELECT);
                     countOutput.set(true);
                 }
             }
-            case SELECT -> {            
+            case SELECT -> {     
+                double stateTime = (System.currentTimeMillis() - stateStart) / Constants.POWERSELECTION_BOUNCE_TIME % 2;
+
+                if(stateTime > 1) { // Adds bounce using a system similar to absolute valuing a signed int
+                    powerLevel = 2 - stateTime;
+                } else {
+                    powerLevel = stateTime;
+                }
+                
                 if(!assistant) {
                     setState(LaunchState.IDLE);
                 }
                 else if(user) {
-                    setState(LaunchState.COUNTDOWN);
-
-                    double stateTime = (System.currentTimeMillis() - stateStart) / Constants.POWERSELECTION_BOUNCE_TIME % 2;
-
-                    if(stateTime > 1) { // Adds bounce using a system similar to absolute valuing a signed int
-                        powerLevel = 2 - stateTime;
-                    } else {
-                        powerLevel = stateTime;
-                    }
-
+                    setState(LaunchState.POWER_DISP);
                     displayCountdownOutput.set(true);
+                }
+            }
+            case POWER_DISP -> {
+                if (!assistant) {
+                    setState(LaunchState.IDLE);
+                }
+                else if (System.currentTimeMillis() - stateStart > 500){
+                    setState(LaunchState.COUNTDOWN);
+                    countOutput.set(false);
                 }
             }
             case COUNTDOWN -> {
                 if (!assistant) {
                     setState(LaunchState.IDLE);
-                    displayCountdownOutput.set(false);
                 }
                 else if (System.currentTimeMillis() - stateStart > Constants.COUNTDOWN_TIME){
                     setState(LaunchState.LAUNCH);
-                    countOutput.set(false); // makes display easier to code to use outputs like so
-                    catapult.setMotors(1); // Power should not change during launch :)
+                    catapult.setMotors(scalePower(Constants.MIN_POWER, 1)); // Power should not change during launch :)
+                    displayCountdownOutput.set(false);
                 }
             }
             case LAUNCH -> {
                 if (System.currentTimeMillis() - stateStart >= Constants.ACTIVATION_TIME) {
                     setState(LaunchState.IDLE);
                     catapult.setMotors(0);
-                    displayCountdownOutput.set(false);
                 }
             }
         }
@@ -104,10 +113,16 @@ public class Launch extends CommandBase {
         SmartDashboard.putBoolean("cornhole/user", user);
         SmartDashboard.putNumber("cornhole/powerLevel", powerLevel);
         SmartDashboard.putNumber("cornhole/analogPower", powerAnalogInput.get());
+        SmartDashboard.putNumber("cornhole/testThing", 69420);
+        SmartDashboard.putString("cornhole/state", currentState.toString());
     }
 
     void setState(LaunchState launchState) {
         this.currentState = launchState;
         this.stateStart = System.currentTimeMillis();
+    }
+
+    private double scalePower(double min, double max) {
+        return (min+(max-min)*powerLevel)*powerAnalogInput.get();
     }
 }
