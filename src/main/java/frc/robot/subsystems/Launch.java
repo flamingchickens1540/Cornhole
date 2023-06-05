@@ -76,10 +76,11 @@ public class Launch extends CommandBase {
                 
                 if(!assistant) {
                     setState(LaunchState.IDLE);
+                    countOutput.set(false);
                 }
                 else if(user) {
                     setState(LaunchState.POWER_DISP);
-                    displayCountdownOutput.set(true);
+                    countOutput.set(false);
                 }
             }
             case POWER_DISP -> {
@@ -88,23 +89,27 @@ public class Launch extends CommandBase {
                 }
                 else if (System.currentTimeMillis() - stateStart > 500){
                     setState(LaunchState.COUNTDOWN);
-                    countOutput.set(false);
+                    countOutput.set(true);
+                    displayCountdownOutput.set(true);
                 }
             }
             case COUNTDOWN -> {
                 if (!assistant) {
                     setState(LaunchState.IDLE);
+                    countOutput.set(false);
+                    displayCountdownOutput.set(false);
                 }
                 else if (System.currentTimeMillis() - stateStart > Constants.COUNTDOWN_TIME){
                     setState(LaunchState.LAUNCH);
                     catapult.setMotors(scalePower(Constants.MIN_POWER, 1)); // Power should not change during launch :)
-                    displayCountdownOutput.set(false);
+                    countOutput.set(false);
                 }
             }
             case LAUNCH -> {
                 if (System.currentTimeMillis() - stateStart >= Constants.ACTIVATION_TIME) {
                     setState(LaunchState.IDLE);
                     catapult.setMotors(0);
+                    displayCountdownOutput.set(false);
                 }
             }
         }
