@@ -9,11 +9,19 @@ import frc.robot.Constants;
 
 public class Launch extends CommandBase {
     private enum LaunchState {
-        IDLE,
-        SELECT,
-        POWER_DISP,
-        COUNTDOWN,
-        LAUNCH;
+        IDLE(true, true),
+        SELECT(false, false),
+        POWER_DISP(true, false),
+        COUNTDOWN(true, false),
+        LAUNCH(true, true);
+
+        LaunchState(boolean count, boolean displayCountdown) {
+            this.count = count;
+            this.displayCountdown = displayCountdown;
+        }
+
+        boolean count;
+        boolean displayCountdown;
     }
 
     DigitalInput assistantSwitch;
@@ -38,11 +46,7 @@ public class Launch extends CommandBase {
         this.powerAnalogInput = powAnalogInput;
         this.displayCountdownOutput = displayCountdownOutput;
 
-        countOutput.set(false); 
-        displayCountdownOutput.set(false);
-
-        currentState = LaunchState.IDLE;
-        stateStart = System.currentTimeMillis();
+        setState(LaunchState.IDLE);
 
         addRequirements(this.catapult = catapult);
         catapult.setDefaultCommand(this);
@@ -57,30 +61,22 @@ public class Launch extends CommandBase {
 
         switch (currentState) {
             case IDLE -> {
-                countOutput.set(false); 
-                displayCountdownOutput.set(false);
-                powerLevel = 0.0;
                 if(assistant && !user) {
                     setState(LaunchState.SELECT);
-                    countOutput.set(true);
                 }
             }
-            case SELECT -> {     
-                double stateTime = (System.currentTimeMillis() - stateStart) / Constants.POWERSELECTION_BOUNCE_TIME % 2;
-
-                if(stateTime > 1) { // Adds bounce using a system similar to absolute valuing a signed int
-                    powerLevel = 2 - stateTime;
-                } else {
-                    powerLevel = stateTime;
-                }
-                
+            case SELECT -> {         
                 if(!assistant) {
                     setState(LaunchState.IDLE);
-                    countOutput.set(false);
                 }
                 else if(user) {
+                    double stateTime = (System.currentTimeMillis() - stateStart) / Constants.POWERSELECTION_BOUNCE_TIME % 2;
+
+                    if(stateTime > 1) { // Adds bounce using a system similar to absolute valuing a signed int
+                        powerLevel += 2 - stateTime;
+                    }
+                    
                     setState(LaunchState.POWER_DISP);
-                    countOutput.set(false);
                 }
             }
             case POWER_DISP -> {
@@ -89,27 +85,22 @@ public class Launch extends CommandBase {
                 }
                 else if (System.currentTimeMillis() - stateStart > 500){
                     setState(LaunchState.COUNTDOWN);
-                    countOutput.set(true);
-                    displayCountdownOutput.set(true);
                 }
             }
             case COUNTDOWN -> {
                 if (!assistant) {
                     setState(LaunchState.IDLE);
                     countOutput.set(false);
-                    displayCountdownOutput.set(false);
                 }
                 else if (System.currentTimeMillis() - stateStart > Constants.COUNTDOWN_TIME){
                     setState(LaunchState.LAUNCH);
                     catapult.setMotors(scalePower(Constants.MIN_POWER, 1)); // Power should not change during launch :)
-                    countOutput.set(false);
                 }
             }
             case LAUNCH -> {
                 if (System.currentTimeMillis() - stateStart >= Constants.ACTIVATION_TIME) {
                     setState(LaunchState.IDLE);
                     catapult.setMotors(0);
-                    displayCountdownOutput.set(false);
                 }
             }
         }
@@ -125,6 +116,9 @@ public class Launch extends CommandBase {
     void setState(LaunchState launchState) {
         this.currentState = launchState;
         this.stateStart = System.currentTimeMillis();
+
+        this.countOutput.set(launchState.count);
+        this.displayCountdownOutput.set(launchState.displayCountdown);
     }
 
     private double scalePower(double min, double max) {
